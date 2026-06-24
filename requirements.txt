@@ -2,3 +2,5 @@ pyTelegramBotAPI
 instaloader
 pyotp
 requests
+flask
+gunicorn
