@@ -3,6 +3,7 @@ import telebot, instaloader, time, os, pyotp, threading, sys, requests, base64, 
 from telebot import types, apihelper
 from concurrent.futures import ThreadPoolExecutor
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from flask import Flask, request
 
 # মিডলওয়্যার চালু রাখা হচ্ছে
 apihelper.ENABLE_MIDDLEWARE = True
@@ -313,13 +314,27 @@ Your files are ready! Please submit it:"""
 
     threading.Thread(target=finalize).start()
 
-# ================= [ বোট চালু ] =================
+app = Flask(__name__)
+
+# আপনার সার্ভারের URL এখানে বসান (অবশ্যই https হতে হবে)
+# উদাহরণ: https://my-bot-server.onrender.com
+WEBHOOK_URL_BASE = os.environ.get("WEBHOOK_URL_BASE") 
+WEBHOOK_URL_PATH = f"/{BOT_TOKEN}/"
+
+@app.route(WEBHOOK_URL_PATH, methods=['POST'])
+def webhook():
+    if request.headers.get('content-type') == 'application/json':
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        return '', 200
+    else:
+        return 'Forbidden', 403
+
 if __name__ == "__main__":
-    print("📡 বট পোলিং শুরু হচ্ছে...")
-    print("✅ Approval system REMOVED! (কোনো HWID চেক নেই)")
-    print("⚠️ বন্ধ করতে Ctrl+C প্রেস করুন")
-    try:
-        bot.infinity_polling()
-    except KeyboardInterrupt:
-        print("\n👋 বট বন্ধ করা হয়েছে।")
-        sys.exit(0)
+    # পুরোনো পোলিং কনফিগারেশন মুছে নতুন করে ওয়েব হুক সেট করা
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
+    
+    # অ্যাপটি রান করা
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
