@@ -58,7 +58,7 @@ def send_progress(chat_id, message_id, current, total):
     now = time.time()
     
     # টেলিগ্রাম রেট লিমিট এড়াতে ১.৫ সেকেন্ডের বাফার (শেষ অ্যাকাউন্টটি সবসময় আপডেট হবে)
-    if current < total and chat_id in last_update_time and (now - last_update_time[chat_id]) < 1.5:
+    if current < total and chat_id in last_update_time and (now - last_update_time[chat_id]) < 1.0:
         return
         
     last_update_time[chat_id] = now
@@ -69,7 +69,7 @@ def send_progress(chat_id, message_id, current, total):
     progress_bar = "██" * block + "░░" * (10 - block)
     
     status_text = f"""╔════════════════════════╗
-║ 𖣠 𝐏𝐑𝐎𝐂𝐄𝐒𝐒𝐈𝐍𝐆 𝐃𝐀𝐓𝐀 :                       ║
+║ 𖣠 𝐏𝐑𝐎𝐂𝐄𝐒𝐒𝐈𝐍𝐆 𝐃𝐀𝐓𝐀 :                        ║
 ╚════════════════════════╝
 𝐋𝐢𝐯𝐞 **𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐬 :** 
 [{progress_bar}]  `{percentage}%`
@@ -136,7 +136,7 @@ def start_cmd(message):
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
     
     welcome_text = f"""╔════════════════════════╗
-║    👾 𝗛𝗢𝗦𝗦𝗔𝗜𝗡 𝗖𝗢𝗢𝗞𝗜𝗘𝗦 𝗕𝗢𝗧 👾     ║
+║    👾 𝗛𝗢𝗦𝗦𝗔𝗜𝗡 𝗖𝗢𝗢𝗞𝗜𝗘𝗦 𝗕𝗢𝗧 👾      ║
 ╚════════════════════════╝
 •                    ── ⋆⋅𖤓⋅⋆ ──                    •
 ⚡ **𝐒𝐭𝐚𝐭𝐮𝐬:** ONLINE 🟢
@@ -156,7 +156,7 @@ def cancel_work(message):
     bot.clear_step_handler_by_chat_id(message.chat.id)
     bot.send_chat_action(message.chat.id, 'typing')
     bot.send_message(message.chat.id, """╔════════════════════════╗
-║🔴𝗧𝗔𝗦𝗞 𝗖𝗔𝗡𝗖𝗘𝗟𝗟𝗘𝗗 :                         ║
+║🔴𝗧𝗔𝗦𝗞 𝗖𝗔𝗡𝗖𝗘𝗟𝗟𝗘𝗗 :                          ║
 ╚════════════════════════╝
 🚫 Operation successfully cancelled.
 🔄 Click below to start over.
@@ -167,7 +167,7 @@ def cancel_work(message):
 def step1(message):
     bot.send_chat_action(message.chat.id, 'typing')
     msg = bot.send_message(message.chat.id, """╔════════════════════════╗
-║👥𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 𝗟𝗜𝗦𝗧: (One  per Line)  ║
+║👥𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘 𝗟𝗜𝗦𝗧: (One  per Line)   ║
 ╚════════════════════════╝
 𝐅𝐨𝐫 𝐄𝐱𝐚𝐦𝐩𝐥𝐞 :
 username.1
@@ -182,7 +182,7 @@ def step2(message):
     user_sessions[chat_id] = {'u_list': usernames, 'results': [], 'failed_list': [], 'current_count': 0}
     bot.send_chat_action(message.chat.id, 'typing')
     msg = bot.send_message(chat_id, """╔════════════════════════╗
-║ 🔑 𝗖𝗢𝗠𝗠𝗢𝗡 𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗:                ║
+║ 🔑 𝗖𝗢𝗠𝗠𝗢𝗡 𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗:                  ║
 ╚════════════════════════╝
 Give me a password:""", reply_markup=get_cancel_markup())
     bot.register_next_step_handler(msg, step3)
@@ -233,7 +233,7 @@ def final_step(message):
             if user_sessions[chat_id].get('current_count', 0) >= len(u_list):
                 break
             bot.send_chat_action(chat_id, 'typing')
-            time.sleep(4)
+            time.sleep(3)
 
     import threading
     threading.Thread(target=keep_typing, daemon=True).start()
@@ -274,7 +274,7 @@ def final_step(message):
                 
                 # ফাইলের ক্যাপশনেই মূল মেসেজের ডিজাইন
                 caption_text = f"""╔════════════════════════╗
-║ 📊 𝗧𝗔𝗦𝗞 𝗥𝗘𝗣𝗢𝗥𝗧 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗       ║
+║ 📊 𝗧𝗔𝗦𝗞 𝗥𝗘𝗣𝗢𝗥𝗧 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗        ║
 ╚════════════════════════╝
 ───────────────────────
 🏁 **𝐒𝐮𝐜𝐞𝐬𝐬:** `{len(res)}`  ✅
@@ -287,7 +287,7 @@ Your files are ready! Please submit it:"""
                     bot.send_document(chat_id, d, caption=caption_text, parse_mode="Markdown", reply_markup=markup)
                     bot.send_chat_action(message.chat.id, 'typing')
                     bot.send_message(chat_id, """╔════════════════════════╗
-║ ✅ 𝗧𝗔𝗦𝗞 𝗙𝗜𝗡𝗜𝗦𝗛𝗘𝗗                              ║
+║ ✅ 𝗧𝗔𝗦𝗞 𝗙𝗜𝗡𝗜𝗦𝗛𝗘𝗗                                ║
 ╚════════════════════════╝
 • All processes are done.
 • Tap the button below to start a new task.""", parse_mode="Markdown", reply_markup=get_start_markup())
@@ -300,7 +300,7 @@ Your files are ready! Please submit it:"""
 #                markup.add(submit_button)
                 
                 caption_text = f"""╔════════════════════════╗
-║ 📊 𝗧𝗔𝗦𝗞 𝗥𝗘𝗣𝗢𝗥𝗧 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗       ║
+║ 📊 𝗧𝗔𝗦𝗞 𝗥𝗘𝗣𝗢𝗥𝗧 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗        ║
 ╚════════════════════════╝
 ───────────────────────
 🏁 **𝐒𝐮𝐜𝐞𝐬𝐬:** `0`  ✅
